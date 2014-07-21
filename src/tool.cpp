@@ -1,6 +1,5 @@
 //
 //  tool.cpp
-//  A_P_P_A_R_E_L
 //
 //  Created by Julien on 30/05/2014.
 //

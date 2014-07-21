@@ -27,7 +27,8 @@ tool::~tool()
 void tool::createControls(string fontName, ofVec2f posCanvas, ofVec2f dimCanvas)
 {
    	mp_canvas = new ofxUICanvas(posCanvas.x,posCanvas.y,dimCanvas.x,dimCanvas.y);
-	mp_canvas->setFont(fontName);
+	if (fontName!="")
+		mp_canvas->setFont(fontName);
     mp_canvas->setTriggerWidgetsUponLoad(true);
 	//mp_canvas->setRetinaResolution();
 
@@ -55,8 +56,15 @@ void tool::loadData()
 //--------------------------------------------------------------
 string tool::getDataPath()
 {
-	return mp_toolManager->m_relPathData+"/"+getDataFileName();
+	return getDataPath( getDataFileName() );
 }
+
+//--------------------------------------------------------------
+string tool::getDataPath(string filename)
+{
+	return mp_toolManager->m_relPathData+"/"+filename;
+}
+
 //--------------------------------------------------------------
 bool tool::isHit(int x, int y)
 {
@@ -86,7 +94,8 @@ toolManager::toolManager()
 {
 	mp_toolTab = 0;
 	mp_toolCurrent = 0;
-	m_relPathData = "Gui/tools";
+	mp_radioTabs = 0;
+	m_relPathData = "gui/tools";
 }
 
 //--------------------------------------------------------------
@@ -158,13 +167,14 @@ void toolManager::createControls(ofVec2f posCanvas, ofVec2f dimCanvas)
 	}
 
 	mp_toolTab = new ofxUICanvas(0,0,400,400);
-	mp_toolTab->setFont(m_fontName);
+	if(m_fontName!="")
+		mp_toolTab->setFont(m_fontName);
 
 	mp_toolTab->setWidgetFontSize(OFX_UI_FONT_MEDIUM);
 	if (m_logo.isAllocated())
 	    mp_toolTab->addWidgetDown(new ofxUIImage(0,0,m_logo.getWidth(),m_logo.getHeight(),&m_logo,"logo",false));
     mp_toolTab->addWidgetDown(new ofxUIFPS(OFX_UI_FONT_SMALL));
-	ofxUIRadio* mp_radioTabs = mp_toolTab->addRadio("Tabs", toolIds, OFX_UI_ORIENTATION_VERTICAL, OFX_UI_FONT_MEDIUM);
+	mp_radioTabs = mp_toolTab->addRadio("Tabs", toolIds, OFX_UI_ORIENTATION_VERTICAL, OFX_UI_FONT_MEDIUM);
 	mp_toolTab->autoSizeToFitWidgets();
 
 	for (mapToolsIt = m_mapTools.begin(); mapToolsIt != m_mapTools.end(); ++mapToolsIt)
@@ -190,8 +200,14 @@ void toolManager::loadData()
 		pTool->loadData();
 	}
 
-	if (mp_toolTab)
+	if (mp_toolTab){
 		mp_toolTab->loadSettings(getDataPath());
+		if (mp_radioTabs)
+		{
+			ofxUIToggle* pToogleActive = mp_radioTabs->getActive();
+				ofLog() << (pToogleActive ? pToogleActive->getName() : "???");
+		}
+	}
 }
 
 //--------------------------------------------------------------
@@ -242,13 +258,8 @@ void toolManager::hideAllTools()
 void toolManager::handleEvents(ofxUIEventArgs& e)
 {
     string name = e.widget->getName();
-	// ofLog() << name;
-	if (name == "Tabs")
-	{
-        ofxUIRadio *radio = (ofxUIRadio *) e.widget;
-		string canvasId = radio->getActiveName();
-		setTool(canvasId);
-	}
+	ofxUIToggle *toggle = (ofxUIToggle *) e.widget;
+	if (toggle && toggle->getValue()) setTool(name);
 }
 
 //--------------------------------------------------------------

@@ -47,6 +47,7 @@ class tool
 		string			_id					(string which){return getControlId(which);}
 		string			getDataFileName		(){return m_id+".xml";}
 		string			getDataPath			();
+		string			getDataPath			(string filename);
 
 		string			m_id;
 		toolManager*	mp_toolManager;
@@ -70,6 +71,7 @@ class toolManager
 		tool*				selectTool			(string id);
 		void				hideAllTools		();
 		void				createControls		(ofVec2f posCanvas, ofVec2f dimCanvas);
+		void				createControls		(ofVec2f dimCanvas){createControls(ofVec2f(),dimCanvas);}
 		void				updateControls		(){}
 		void				loadData			();
 		void				saveData			();

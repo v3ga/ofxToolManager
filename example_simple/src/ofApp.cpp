@@ -5,12 +5,11 @@
 //--------------------------------------------------------------
 void ofApp::setup()
 {
-	toolManager.setLogo("murmur_logo.png");
-	toolManager.setFontName("fonts/FOLDERAL.TTF");
+	toolManager.setLogo("images/ofw-logo.png"); // inside date/tools folder
 
 	toolManager.addTool( new tool01(&toolManager) );
 	toolManager.addTool( new tool02(&toolManager) );
-	toolManager.createControls(ofVec2f(150,0), ofVec2f(400,100));
+	toolManager.createControls(ofVec2f(500,100));
 
 	toolManager.loadData();
 }

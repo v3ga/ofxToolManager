@@ -135,7 +135,11 @@ tool* toolManager::setTool(string id)
 
 	hideAllTools();
 	mp_toolCurrent = m_mapTools[id];
-	mp_toolCurrent->show();
+	if (mp_toolCurrent)
+	{
+		mp_toolCurrent->show();
+		ofLog() << "toolManager, setting tool '" << mp_toolCurrent->m_id << "'";
+	}
 	
 	return mp_toolCurrent;
 }
@@ -192,20 +196,15 @@ void toolManager::createControls(ofVec2f posCanvas, ofVec2f dimCanvas)
 //--------------------------------------------------------------
 void toolManager::loadData()
 {
+	if (mp_toolTab){
+		mp_toolTab->loadSettings(getDataPath());
+	}
+
 	map<string, tool*>::iterator mapToolsIt;
 	for (mapToolsIt = m_mapTools.begin(); mapToolsIt != m_mapTools.end(); ++mapToolsIt)
 	{
 		tool* pTool = mapToolsIt->second;
 		pTool->loadData();
-	}
-
-	if (mp_toolTab){
-		mp_toolTab->loadSettings(getDataPath());
-		if (mp_radioTabs)
-		{
-			ofxUIToggle* pToogleActive = mp_radioTabs->getActive();
-				ofLog() << (pToogleActive ? pToogleActive->getName() : "???");
-		}
 	}
 }
 

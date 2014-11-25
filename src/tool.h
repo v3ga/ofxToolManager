@@ -33,8 +33,14 @@ class tool
 		virtual	void	enableDrawCallback	(bool is=true);
 		virtual	void	exit				(){}
 
+		virtual	void	select				(){}
+		virtual	void	unselect			(){}
+
+
 	
 		virtual	void	mousePressed		(int x, int y, int button){}
+		virtual void	mouseDragged		(int x, int y, int button){}
+		virtual void	mouseReleased		(int x, int y, int button){}
 		virtual	bool	keyPressed			(int key){return false;}
 		virtual	void 	dragEvent			(ofDragInfo dragInfo){}
 	
@@ -88,6 +94,8 @@ class toolManager
 		string				getDataPath			(){return m_relPathData+"/"+getDataFileName();}
 
 		void				mousePressed		(int x, int y, int button);
+		void				mouseDragged		(int x, int y, int button);
+		void				mouseReleased		(int x, int y, int button);
 		bool				keyPressed			(int key);
 		void 				dragEvent			(ofDragInfo dragInfo);
 	

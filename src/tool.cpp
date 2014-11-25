@@ -131,12 +131,19 @@ tool* toolManager::getTool(string id)
 tool* toolManager::setTool(string id)
 {
 	if (m_mapTools.count(id) == 0) return 0;
-	mp_toolCurrent = 0;
+	if (mp_toolCurrent)
+	{
+		mp_toolCurrent->unselect();
+		mp_toolCurrent = 0;
+	}
 
 	hideAllTools();
+
+
 	mp_toolCurrent = m_mapTools[id];
 	if (mp_toolCurrent)
 	{
+		mp_toolCurrent->select();
 		mp_toolCurrent->show();
 		ofLog() << "toolManager, setting tool '" << mp_toolCurrent->m_id << "'";
 	}
@@ -326,6 +333,21 @@ void toolManager::mousePressed(int x, int y, int button)
 	if (mp_toolCurrent)
 		mp_toolCurrent->mousePressed(x,y,button);
 }
+
+//--------------------------------------------------------------
+void toolManager::mouseDragged(int x, int y, int button)
+{
+	if (mp_toolCurrent)
+		mp_toolCurrent->mouseDragged(x,y,button);
+}
+
+//--------------------------------------------------------------
+void toolManager::mouseReleased(int x, int y, int button)
+{
+	if (mp_toolCurrent)
+		mp_toolCurrent->mouseReleased(x,y,button);
+}
+
 
 //--------------------------------------------------------------
 bool toolManager::keyPressed(int key)

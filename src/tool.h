@@ -1,3 +1,4 @@
+
 //
 //  tool.h
 //
@@ -66,6 +67,9 @@ class toolManager
 		toolManager			();
 		~toolManager		();
 	
+	
+		static toolManager* smp_instance;
+		static toolManager* instance			();
 	
 		void				setLogo				(string logoName);
 		void				setFontName			(string fontName){m_fontName = fontName;}

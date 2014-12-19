@@ -88,6 +88,14 @@ void tool::enableDrawCallback(bool is)
 	}
 }
 
+
+//--------------------------------------------------------------
+toolManager* toolManager::smp_instance = 0;
+toolManager* toolManager::instance()
+{
+	return smp_instance;
+}
+
 //--------------------------------------------------------------
 toolManager::toolManager()
 {
@@ -95,6 +103,8 @@ toolManager::toolManager()
 	mp_toolCurrent = 0;
 	mp_radioTabs = 0;
 	m_relPathData = "gui/tools";
+	
+	smp_instance = this;
 }
 
 //--------------------------------------------------------------
@@ -211,7 +221,8 @@ void toolManager::loadData()
 	for (mapToolsIt = m_mapTools.begin(); mapToolsIt != m_mapTools.end(); ++mapToolsIt)
 	{
 		tool* pTool = mapToolsIt->second;
-		pTool->loadData();
+		if (pTool)
+			pTool->loadData();
 	}
 }
 

@@ -15,23 +15,28 @@ class tool
 {
 	public:
 		tool			(string id, toolManager* parent);
+		tool			(string id, string label, toolManager* parent);
 		virtual ~tool	();
 
-				void	createControls		(string fontName, ofVec2f posCanvas, ofVec2f dimCanvas);
+		virtual	void	createControls		(string fontName="", ofVec2f posCanvas=ofVec2f(), ofVec2f dimCanvas=ofVec2f(320,400));
 		virtual	void	createControlsCustom(){}
 		virtual	void	createControlsCustomFinalize(){}
 		virtual void	updateControls		(){}
 		virtual	void	handleEvents		(ofxUIEventArgs& e){}
 		virtual	void	saveData			();
 		virtual	void	loadData			();
+		virtual	void	loadLanguageStrings	(ofxXmlSettings& langSettings){}
 		virtual	void	setup				(){}
 		virtual void	update				(){}
-		virtual void	drawUI				(){}
+		virtual void	drawUI				();
 		virtual void	draw				(){}
-		virtual	void	show				(bool is=true){if (mp_canvas) mp_canvas->setVisible(is);}
+		virtual	void	show				(bool is=true){if (mp_canvas){mp_canvas->setVisible(is);mp_canvas->disableAppDrawCallback();}}
 				void	hide				(){show(false);}
 		virtual	bool	isHit				(int x, int y);
+		virtual	bool	hasKeyboardFocus	();
 		virtual	void	enableDrawCallback	(bool is=true);
+		virtual	void	enableWindowCallbacks(){if (mp_canvas) mp_canvas->EnableCallbacks();}
+		virtual	void	disableWindowCallbacks(){if (mp_canvas) mp_canvas->DisableCallbacks();}
 		virtual	void	exit				(){}
 
 		virtual	void	select				(){}
@@ -56,6 +61,7 @@ class tool
 		string			getDataPath			(string filename);
 
 		string			m_id;
+		string			m_label;
 		toolManager*	mp_toolManager;
 		ofxUICanvas*	mp_canvas;
 };
@@ -87,10 +93,12 @@ class toolManager
 		void				setup				();
 		void				handleEvents		(ofxUIEventArgs& e);
 		void				update				();
-		void				updateUI			();
+		void				showUI				(bool is=true);
+		void				hideUI				(){showUI(false);}
 		void				drawUI				();
 		void				draw				();
 		bool				isHit				(int x, int y);
+		bool				hasKeyboardFocus	();
 		void				enableDrawCallback	(bool is=true);
 		void				exit				();
 
@@ -113,6 +121,7 @@ class toolManager
 	
 		ofImage				m_logo;
 		string				m_fontName;
-	
+ 
+		bool				m_showUI;
 	
 };

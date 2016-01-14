@@ -12,8 +12,18 @@
 tool::tool(string id, toolManager* parent)
 {
 	m_id = id;
+	m_label = id;
 	mp_toolManager = parent;
 	mp_canvas = 0;
+}
+
+//--------------------------------------------------------------
+tool::tool(string id, string label, toolManager* parent)
+{
+	m_id = id;
+	mp_toolManager = parent;
+	mp_canvas = 0;
+	m_label = label;
 }
 
 //--------------------------------------------------------------
@@ -29,9 +39,10 @@ void tool::createControls(string fontName, ofVec2f posCanvas, ofVec2f dimCanvas)
 	if (fontName!="")
 		mp_canvas->setFont(fontName);
     mp_canvas->setTriggerWidgetsUponLoad(true);
-	//mp_canvas->setRetinaResolution();
+	mp_canvas->setName(m_label);
 
    createControlsCustom();
+   mp_canvas->disableAppDrawCallback();
 
    ofAddListener(mp_canvas->newGUIEvent, this, &tool::handleEvents);
 }
@@ -68,9 +79,22 @@ string tool::getDataPath(string filename)
 bool tool::isHit(int x, int y)
 {
 	if (mp_canvas)
+	{
 		return mp_canvas->isHit(x,y);
+	}
 	return false;
 }
+
+//--------------------------------------------------------------
+bool tool::hasKeyboardFocus()
+{
+	if (mp_canvas)
+	{
+		return mp_canvas->hasKeyboardFocus();
+	}
+	return false;
+}
+
 
 //--------------------------------------------------------------
 void tool::enableDrawCallback(bool is)
@@ -78,13 +102,22 @@ void tool::enableDrawCallback(bool is)
 	if (mp_canvas)
 	{
 		if (is){
-			mp_canvas->enableAppDrawCallback();
-			mp_canvas->enableMouseEventCallbacks();
+//			mp_canvas->enableAppDrawCallback();
+//			mp_canvas->enableMouseEventCallbacks();
 		}
 		else{
-			mp_canvas->disableAppDrawCallback();
-			mp_canvas->disableMouseEventCallbacks();
+//			mp_canvas->disableAppDrawCallback();
+//			mp_canvas->disableMouseEventCallbacks();
 		}
+	}
+}
+
+//--------------------------------------------------------------
+void tool::drawUI()
+{
+	if (mp_canvas)
+	{
+		mp_canvas->draw();
 	}
 }
 
@@ -105,6 +138,7 @@ toolManager::toolManager()
 	m_relPathData = "gui/tools";
 	
 	smp_instance = this;
+	m_showUI = true;
 }
 
 //--------------------------------------------------------------
@@ -281,16 +315,11 @@ void toolManager::handleEvents(ofxUIEventArgs& e)
 //--------------------------------------------------------------
 void toolManager::enableDrawCallback(bool is)
 {
-	if (mp_toolCurrent)
+/*	if (mp_toolCurrent)
 		mp_toolCurrent->enableDrawCallback(is);
+*/
 }
 
-
-//--------------------------------------------------------------
-void toolManager::updateUI()
-{
-	
-}
 
 //--------------------------------------------------------------
 void toolManager::update()
@@ -304,13 +333,25 @@ void toolManager::update()
 }
 
 //--------------------------------------------------------------
+void toolManager::showUI(bool is)
+{
+	m_showUI=is;
+/*	if (mp_toolCurrent)
+		mp_toolCurrent->enableDrawCallback(is);
+*/
+}
+
+//--------------------------------------------------------------
 void toolManager::drawUI()
 {
-	if (mp_toolTab)
-		mp_toolTab->draw();
+	if (m_showUI)
+	{
+		if (mp_toolTab)
+			mp_toolTab->draw();
 	
-	if (mp_toolCurrent)
-		mp_toolCurrent->drawUI();
+		if (mp_toolCurrent)
+			mp_toolCurrent->drawUI();
+	}
 }
 
 //--------------------------------------------------------------
@@ -331,12 +372,27 @@ bool toolManager::isHit(int x, int y)
 	{
 		tool* pTool = mapToolsIt->second;
 		if (pTool->isHit(x, y))
+		{
+			//ofLog() << pTool->m_id << " was hit";
 			return true;
+		}
 	}
 	
 	return false;
 }
 
+//--------------------------------------------------------------
+bool toolManager::hasKeyboardFocus()
+{
+	//ofLog() << "toolManager::hasKeyboardFocus()";
+	map<string, tool*>::iterator mapToolsIt;
+	for (mapToolsIt = m_mapTools.begin(); mapToolsIt != m_mapTools.end(); ++mapToolsIt)
+	{
+		tool* pTool = mapToolsIt->second;
+		return pTool->hasKeyboardFocus();
+	}
+	return false;
+}
 
 //--------------------------------------------------------------
 void toolManager::mousePressed(int x, int y, int button)
